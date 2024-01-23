@@ -14,8 +14,6 @@ class Game
     player_1_move_x
   end
 
-  @winning_board_hash_array = [[@board_hash[a1]],
-
   def display_board
     puts "\nGAME BOARD\n\s\s1 2 3\nA #{@board_hash[:a1]} #{@board_hash[:a2]} #{@board_hash[:a3]}\nB #{@board_hash[:b1]} #{@board_hash[:b2]} #{@board_hash[:b3]}\nC #{@board_hash[:c1]} #{@board_hash[:c2]} #{@board_hash[:c3]}\n\s"
   end
