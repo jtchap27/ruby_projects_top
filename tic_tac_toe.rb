@@ -15,7 +15,32 @@ class Game
   end
 
   def display_board
-    puts "\nGAME BOARD\n\s\s1 2 3\nA #{@board_hash[:a1]} #{@board_hash[:a2]} #{@board_hash[:a3]}\nB #{@board_hash[:b1]} #{@board_hash[:b2]} #{@board_hash[:b3]}\nC #{@board_hash[:c1]} #{@board_hash[:c2]} #{@board_hash[:c3]}\n\s"
+    puts "\nGAME BOARD\n\s\s1  2  3\n\nA #{@board_hash[:a1]}  #{@board_hash[:a2]}  #{@board_hash[:a3]}\n\nB #{@board_hash[:b1]}  #{@board_hash[:b2]}  #{@board_hash[:b3]}\n\nC #{@board_hash[:c1]}  #{@board_hash[:c2]}  #{@board_hash[:c3]}\n\s"
+  end
+
+  def return_winning_combos_array
+    return [
+      [@board_hash[:a1], @board_hash[:a2], @board_hash[:a3]],
+      [@board_hash[:b1], @board_hash[:b2], @board_hash[:b3]],
+      [@board_hash[:c1], @board_hash[:c2], @board_hash[:c3]],
+      [@board_hash[:a1], @board_hash[:b1], @board_hash[:c1]],
+      [@board_hash[:a2], @board_hash[:b2], @board_hash[:c2]],
+      [@board_hash[:a3], @board_hash[:b3], @board_hash[:c3]],
+      [@board_hash[:a1], @board_hash[:b2], @board_hash[:c3]],
+      [@board_hash[:c1], @board_hash[:b2], @board_hash[:a3]]
+    ]
+  end
+
+  def player_1_x_win
+    if return_winning_combos_array.include?(["X", "X", "X"])
+      game_over_sequence
+    end
+  end
+
+  def player_2_o_win
+    if return_winning_combos_array.include?(["O", "O", "O"])
+      game_over_sequence
+    end
   end
 
   def player_1_move_x
@@ -45,9 +70,9 @@ class Game
       @board_hash[sym] = "X"
     else
       puts "\n\t\s\s\s--INVALID INPUT--\n\tPlease pick an empty spot"
-      display_board
       player_1_move_x
     end
+    player_1_x_win
     unless @board_hash.value?("-")
       game_over_sequence
     end
@@ -58,9 +83,9 @@ class Game
       @board_hash[sym] = "O"
     else
       puts "\n\t\s\s\s--INVALID INPUT--\n\tPlease pick an empty spot"
-      display_board
       player_2_move_o
     end
+    player_2_o_win
     unless @board_hash.value?("-")
       game_over_sequence
     end
@@ -68,7 +93,13 @@ class Game
 
   def game_over_sequence
     self.game_over = true
-    puts "Game over! Play again?"
+    if return_winning_combos_array.include?(["X", "X", "X"])
+      puts "#{player_1_name} is the winner!"
+    elsif return_winning_combos_array.include?(["O", "O", "O"])
+      puts "#{player_2_name} is the winner!"
+    else
+      puts "The game is a draw."
+    end
   end
 
 end
