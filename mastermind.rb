@@ -17,9 +17,8 @@ class Game
     code_master = ComputerPlayer.new()
     p code_master.name
     puts "Please enter a name for the human player:"
-    code_breaker = HumanPlayer.new(gets.chomp)
+    code_breaker = HumanPlayer.new(gets.chomp.capitalize)
     @code_breaker = code_breaker.name
-    p @code_breaker
     @array_of_colors = ["blue", "green", "white", "red", "black", "purple"]
     @code_to_break_array = @array_of_colors.sample(4)
     @guesses_array = [
@@ -32,7 +31,17 @@ class Game
       ["---", "---", "---", "---"],
       ["---", "---", "---", "---"],
     ]
-    @feedback_array = []
+    @feedback_array = [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ]
+    puts "Feedback explained: \"C\" means correct color and location, while \"c\" means correct color but wrong location."
     display_game_board
   end
 
@@ -41,33 +50,46 @@ class Game
     while i >= 0 do
       k = 0
       while k <= 3 do
-        puts "#{@code_breaker}, please make a guess:"
-        @guesses_array[i][k] = gets.chomp
+        # individual round guess loop
+        puts "#{@code_breaker}, you have #{i + 1} guesses remaining. please guess color #{k + 1}:"
+        @guesses_array[i][k] = gets.chomp.downcase
         k += 1
       end
       feedback_array_to_push = []
       j = 0
       while j <= 3 do
+        # feedback loop
         if @guesses_array[i][j] == @code_to_break_array[j]
           feedback_array_to_push.push(" C ")
         elsif @code_to_break_array.include?(@guesses_array[i][j])
           feedback_array_to_push.push(" c ")
+        else
+          feedback_array_to_push.push(" - ")
         end
         j += 1
       end
-      @feedback_array.push(feedback_array_to_push.shuffle)
+      @feedback_array[i].push(feedback_array_to_push.shuffle)
       display_game_board
-      i -= 1
+      if @guesses_array[i] == @code_to_break_array
+        game_over_sequence
+        break
+      else
+        i -= 1
+      end
     end
+    puts "You did not break the code. Better luck next time.\n\s"
   end
   
   def play_a_game
     make_guess
-    display_game_board
+  end
+
+  def game_over_sequence
+    puts "\nWell done #{@code_breaker}! You broke the code!\n\s"
   end
 
   def display_game_board
-    puts "\s\s\s\s\s\s\sCURRENT GAME BOARD\n\n\s\s\sCode #{@code_to_break_array}\n\nGuess 1 #{@guesses_array[0]}\nGuess 2 #{@guesses_array[1]}\nGuess 3 #{@guesses_array[2]}\nGuess 4 #{@guesses_array[3]}\nGuess 5 #{@guesses_array[4]}\nGuess 6 #{@guesses_array[4]}\nGuess 7 #{@guesses_array[6]}\nGuess 8 #{@guesses_array[7]}\n\nFeedback\n#{@feedback_array}"
+    puts "\s\s\s\s\s\s\sCURRENT GAME BOARD\n\n\s\s\sCode #{@code_to_break_array}\n\nGuess 8 #{@guesses_array[0]}\s\s#{@feedback_array[0]}\nGuess 7 #{@guesses_array[1]}\s\s#{@feedback_array[1]}\nGuess 6 #{@guesses_array[2]}\s\s#{@feedback_array[2]}\nGuess 5 #{@guesses_array[3]}\s\s#{@feedback_array[3]}\nGuess 4 #{@guesses_array[4]}\s\s#{@feedback_array[4]}\nGuess 3 #{@guesses_array[5]}\s\s#{@feedback_array[5]}\nGuess 2 #{@guesses_array[6]}\s\s#{@feedback_array[6]}\nGuess 1 #{@guesses_array[7]}\s\s#{@feedback_array[7]}\n\nColors to choose from: #{@array_of_colors}\n\n"
   end
 
   def display_array_of_guesses
