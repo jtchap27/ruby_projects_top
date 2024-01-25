@@ -20,6 +20,7 @@ class Game
   include GamePlayable
   attr_reader :code_maker, :code_breaker
   def initialize
+    @game_is_over = false
     puts "Welcome to Mastermind!\nPlease select whether you would like to play as the code maker or code breaker.\nType in 1 for code maker, 2 for code breaker."
     @code_deciding_number = gets.chomp.to_i
     # for playing with human as code maker
@@ -69,13 +70,22 @@ class Game
   end
 
   def play_a_game
+    # playing game with computer as code breaker
     if @code_deciding_number == 1
       i = @guesses_array.length - 1
       while i >= 0 do
         k = 0
         while k <= 3 do
           # automated guess loop targeting single element of array in guesses_array
-          @guesses_array[i][k] = get_array_of_colors_easy_med_hard(3).sample(1)
+          if i < @guesses_array.length - 1
+            if @feedback_array[i + 1][0][k] == "C"
+              @guesses_array[i][k] = @guesses_array[i + 1][k]
+            else
+              @guesses_array[i][k] = get_array_of_colors_easy_med_hard(3).sample(1)
+            end
+          else
+            @guesses_array[i][k] = get_array_of_colors_easy_med_hard(3).sample(1)
+          end
           k += 1
         end
         feedback_array_to_push = []
@@ -83,9 +93,9 @@ class Game
         while j <= 3 do
           # feedback loop
           if @guesses_array[i][j] == @code_to_break_array[j]
-            feedback_array_to_push.push(" C ")
+            feedback_array_to_push.push("C")
           elsif @code_to_break_array.include?(@guesses_array[i][j])
-            feedback_array_to_push.push(" c ")
+            feedback_array_to_push.push("c")
           else
             feedback_array_to_push.push(" - ")
           end
@@ -93,13 +103,14 @@ class Game
         end
         @feedback_array[i].push(feedback_array_to_push)
         if @guesses_array[i] == @code_to_break_array
+          display_game_board
           game_over_sequence
           break
         else
           i -= 1
         end
       end
-      if @guesses_array[0][3] != nil
+      unless @game_is_over == true
         display_game_board
         puts "\n\t#{@code_breaker}, you did not break the code shown below. #{@code_maker} is victorious! Better luck next time.\n\s"
       end
@@ -142,6 +153,7 @@ class Game
   end
 
   def game_over_sequence
+    @game_is_over = true
     puts "\n\t\tWell done #{@code_breaker}! You broke the code shown below!"
   end
 
